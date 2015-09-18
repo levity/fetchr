@@ -131,7 +131,6 @@ Request.prototype.end = function (callback) {
     });
 
     promise.then(function (result) {
-        console.log('META', result);
         if (result.meta) {
             self.options.serviceMeta.push(result.meta)
         };
