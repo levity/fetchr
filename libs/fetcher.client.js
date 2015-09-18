@@ -56,6 +56,7 @@ function pickContext (context, picker, method) {
  * @param {String} operation The CRUD operation name: 'create|read|update|delete'.
  * @param {String} resource name of fetcher/service
  * @param {Object} options configuration options for Request
+ * @param {Array} [options.serviceMeta] Array to hold per-request/session metadata from all service calls.
  * @constructor
  */
 function Request (operation, resource, options) {
@@ -70,7 +71,8 @@ function Request (operation, resource, options) {
         xhrTimeout: options.xhrTimeout || DEFAULT_XHR_TIMEOUT,
         corsPath: options.corsPath,
         context: options.context || {},
-        contextPicker: options.contextPicker || {}
+        contextPicker: options.contextPicker || {},
+        serviceMeta: options.serviceMeta || []
     };
     this._params = {};
     this._body = null;
@@ -128,9 +130,17 @@ Request.prototype.end = function (callback) {
         setImmediate(executeRequest, self, resolve, reject);
     });
 
+    promise.then(function (result) {
+        console.log('META', result);
+        if (result.meta) {
+            self.options.serviceMeta.push(result.meta)
+        };
+        return result;
+    });
+
     if (callback) {
-        promise.then(function (data) {
-            setImmediate(callback, null, data);
+        promise.then(function (result) {
+            setImmediate(callback, null, result.data, result.meta);
         }, function (err) {
             setImmediate(callback, err);
         });
@@ -215,7 +225,7 @@ function executeRequest (request, resolve, reject) {
         } else {
             result = {};
         }
-        resolve(result.data);
+        resolve(result);
     });
 };
 
@@ -255,6 +265,7 @@ Request.prototype._constructGroupUri = function (uri) {
 
 function Fetcher (options) {
     this.options = options || {};
+    this.options.serviceMeta = [];
 }
 
 Fetcher.prototype = {
@@ -376,6 +387,17 @@ Fetcher.prototype = {
      */
     updateOptions: function (options) {
         this.options = lodash.merge(this.options, options);
+    },
+
+    /**
+     * get the serviceMeta array.
+     * The array contains all xhr meta returned in this session
+     * with the 0 index being the first call.
+     * @method getServiceMeta
+     * @return {Array} array of metadata returned by each service call
+     */
+    getServiceMeta: function () {
+        return this.options.serviceMeta;
     }
 };
 
