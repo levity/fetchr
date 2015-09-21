@@ -271,6 +271,47 @@ describe('Server Fetcher', function () {
 
 
         describe('#GET', function() {
+            it('should respond to GET api request w/o meta', function (done) {
+                var operation = 'read';
+                var statusCodeSet = false;
+                var params = {
+                        uuids: ['cd7240d6-aeed-3fed-b63c-d7e99e21ca17', 'cd7240d6-aeed-3fed-b63c-d7e99e21ca17'],
+                        id: 'asdf'
+                    };
+                var req = {
+                         method: 'GET',
+                         path: '/' + mockService.name + ';' + qs.stringify(params, ';'),
+                         query: {}
+                    };
+                var res = {
+                        json: function(response) {
+                            expect(response).to.exist;
+                            expect(response).to.not.be.empty;
+                            expect(response).to.not.contain.keys('data', 'meta');
+                            expect(response).to.contain.keys('operation', 'args');
+                            expect(response.operation.name).to.equal(operation);
+                            expect(response.operation.success).to.be.true;
+                            expect(response.args).to.contain.keys('params');
+                            expect(response.args.params).to.deep.equal(params);
+                            expect(statusCodeSet).to.be.true;
+                            done();
+                        },
+                        status: function(code) {
+                            expect(code).to.equal(200);
+                            statusCodeSet = true;
+                            return this;
+                        },
+                        send: function (code) {
+                            console.log('Not Expected: middleware responded with', code);
+                        }
+                    };
+                var next = function () {
+                        console.log('Not Expected: middleware skipped request');
+                    };
+                var middleware = Fetcher.middleware({pathPrefix: '/api'});
+
+                middleware(req, res, next);
+            });
             it('should respond to GET api request', function (done) {
                 var operation = 'read',
                     statusCodeSet = false,
@@ -280,7 +321,10 @@ describe('Server Fetcher', function () {
                     },
                     req = {
                         method: 'GET',
-                        path: '/' + mockService.name + ';' + qs.stringify(params, ';')
+                        path: '/' + mockService.name + ';' + qs.stringify(params, ';'),
+                        query: {
+                            returnMeta: true
+                        }
                     },
                     res = {
                         json: function(response) {
@@ -325,7 +369,10 @@ describe('Server Fetcher', function () {
                     },
                     req = {
                         method: 'GET',
-                        path: '/' + mockService.name + ';' + qs.stringify(params, ';')
+                        path: '/' + mockService.name + ';' + qs.stringify(params, ';'),
+                        query: {
+                            returnMeta: true
+                        }
                     },
                     res = {
                         json: function(response) {
@@ -379,7 +426,10 @@ describe('Server Fetcher', function () {
                     },
                     req = {
                         method: 'GET',
-                        path: '/' + mockService.name + ';' + qs.stringify(params, ';')
+                        path: '/' + mockService.name + ';' + qs.stringify(params, ';'),
+                        query: {
+                            returnMeta: true
+                        }
                     },
                     res = {
                         json: function(response) {

@@ -114,6 +114,7 @@ describe('Client Fetcher', function () {
                 validateGET: function (url, headers, config) {
                     expect(url).to.contain(DEFAULT_XHR_PATH + '/' + resource);
                     expect(url).to.contain('?_csrf=' + context._csrf);
+                    expect(url).to.contain('returnMeta=true');
                 },
                 validatePOST: function (url, headers, body, config) {
                     expect(url).to.equal(DEFAULT_XHR_PATH + '?_csrf=' + context._csrf);
@@ -496,6 +497,7 @@ describe('Client Fetcher', function () {
                     expect(url).to.contain('?_csrf=' + context._csrf);
                     // for GET, ignore 'random'
                     expect(url).to.not.contain('random=' + context.random);
+                    expect(url).to.contain('returnMeta=true');
                 },
                 validatePOST: function (url, headers, body, config) {
                     expect(url).to.equal(DEFAULT_XHR_PATH + '?_csrf=' + context._csrf + '&random=' + context.random);

@@ -318,10 +318,15 @@ Fetcher.middleware = function () {
                         res.status(errResponse.statusCode).json(errResponse.output);
                         return;
                     }
-                    res.status(meta.statusCode || 200).json({
-                        data: data,
-                        meta: meta
-                    });
+                    if (req.query.returnMeta) {
+                        res.status(meta.statusCode || 200).json({
+                            data: data,
+                            meta: meta
+                        });
+                    } else {
+                        // TODO: Remove `returnMeta` feature flag after next release
+                        res.status(meta.statusCode || 200).json(data);
+                    }
                 });
         } else {
             var requests = req.body && req.body.requests;
