@@ -277,8 +277,15 @@ Request.prototype._constructGroupUri = function (uri) {
  */
 
 function Fetcher (options) {
-    this.options = options || {};
-    this.options._serviceMeta = [];
+    this._serviceMeta = [];
+    this.options = {
+        xhrPath: options.xhrPath,
+        xhrTimeout: options.xhrTimeout,
+        corsPath: options.corsPath,
+        context: options.context,
+        contextPicker: options.contextPicker,
+        _serviceMeta: this._serviceMeta
+    };
 }
 
 Fetcher.prototype = {
@@ -410,7 +417,7 @@ Fetcher.prototype = {
      * @return {Array} array of metadata returned by each service call
      */
     getServiceMeta: function () {
-        return this.options._serviceMeta;
+        return this._serviceMeta;
     }
 };
 
