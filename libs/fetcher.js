@@ -358,7 +358,7 @@ Fetcher.middleware = function () {
                 .params(singleRequest.params)
                 .body(singleRequest.body || {})
                 .end(function(err, data) {
-                    meta = serviceMeta[0] || {};
+                    var meta = serviceMeta[0] || {};
                     if (meta.headers) {
                         res.set(meta.headers);
                     }
