@@ -193,7 +193,8 @@ function executeRequest (request, resolve, reject) {
         // easily fixed by refreshing the browser, but the feature flag will ensure
         // old fetcher clients will receive the old format and the new client will
         // receive the new format
-        get_uri = get_uri + '&returnMeta=true';
+        get_uri += (get_uri.indexOf('?') !== -1) ? '&' : '?';
+        get_uri += 'returnMeta=true';
         if (get_uri.length <= MAX_URI_LEN) {
             uri = get_uri;
         } else {
