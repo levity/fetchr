@@ -170,7 +170,7 @@ function executeRequest (request, resolve, reject) {
     }
 
     var service = Fetcher.getService(request.resource);
-    service[op].apply(service, args);
+    return service[op].apply(service, args);
 }
 
 /**
